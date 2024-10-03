@@ -1,5 +1,6 @@
 const express = require('express')
 const morgan = require('morgan')
+const cors = require('cors')
 
 const app = express()
 
@@ -12,6 +13,8 @@ morgan.token('body', (req) => {
 
 //use morgan middleware based on tiny format and custom logging for POST requests
 app.use(morgan(':method :url :status :res[content-length] - :response-time ms :body'))
+
+app.use(cors())
 
 let persons = [
     { 
