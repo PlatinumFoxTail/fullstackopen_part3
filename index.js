@@ -6,6 +6,8 @@ const app = express()
 
 app.use(express.json())
 
+app.use(express.static('dist'))
+
 //create token to log request body for POST requests
 morgan.token('body', (req) => {
     return req.method === 'POST' ? JSON.stringify(req.body) : ''
