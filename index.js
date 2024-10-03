@@ -1,6 +1,8 @@
 const express = require('express')
 const app = express()
 
+app.use(express.json())
+
 let persons = [
     { 
         "id": "1",
@@ -54,7 +56,41 @@ app.delete('/api/persons/:id', (request, response) => {
   
     response.status(204).end()
   })
-  
+
+app.post('/api/persons', (request, response) => {
+    const person = request.body;
+
+    //check name and number provided
+    if (!person.name || !person.number) {
+        return response.status(400).json({ 
+            error: 'The name or number is missing' 
+        });
+    }
+
+    //check if name already occupied
+    const nameOccupied = persons.some(p => p.name === person.name);
+    if (nameOccupied) {
+        return response.status(400).json({ 
+            error: 'The name already exists in the phonebook' 
+        });
+    }
+
+    function getRandomInt(max) {
+        return Math.floor(Math.random() * max)
+    }
+    const randomId = getRandomInt(10000)
+
+    const newPerson = {
+        id: String(randomId),
+        name: person.name,
+        number: person.number
+    };
+
+    persons = persons.concat(newPerson)
+    response.json(newPerson)
+});
+
+
 const PORT = 3001
 app.listen(PORT, () => {
     console.log(`Server running on port ${PORT}`)
