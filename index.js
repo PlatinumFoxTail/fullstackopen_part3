@@ -1,22 +1,17 @@
 const express = require('express')
-const morgan = require('morgan')
-const cors = require('cors')
-
 const app = express()
 
-app.use(express.json())
-
-app.use(express.static('dist'))
+//const morgan = require('morgan')
 
 //create token to log request body for POST requests
-morgan.token('body', (req) => {
-    return req.method === 'POST' ? JSON.stringify(req.body) : ''
-});
+//morgan.token('body', (req) => {
+    //return req.method === 'POST' ? JSON.stringify(req.body) : ''
+//});
 
 //use morgan middleware based on tiny format and custom logging for POST requests
-app.use(morgan(':method :url :status :res[content-length] - :response-time ms :body'))
+//app.use(morgan(':method :url :status :res[content-length] - :response-time ms :body'))
 
-app.use(cors())
+
 
 let persons = [
     { 
@@ -40,6 +35,27 @@ let persons = [
         "number": "39-23-6423122"
       }
   ]
+
+app.use(express.static('dist'))
+
+const requestLogger = (request, response, next) => {
+    console.log('Method:', request.method)
+    console.log('Path:  ', request.path)
+    console.log('Body:  ', request.body)
+    console.log('---')
+    next()
+  }
+
+const cors = require('cors')
+
+app.use(cors())
+
+app.use(express.json())
+app.use(requestLogger)
+
+const unknownEndpoint = (request, response) => {
+    response.status(404).send({ error: 'unknown endpoint' })
+  }
 
 app.get('/info', (request, response) => {
     const totalPersons = persons.length;
@@ -105,6 +121,7 @@ app.post('/api/persons', (request, response) => {
     response.json(newPerson)
 });
 
+app.use(unknownEndpoint)
 
 const PORT = process.env.PORT || 3001
 app.listen(PORT, () => {
