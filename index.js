@@ -71,15 +71,21 @@ app.get('/api/persons', (request, response) => {
     response.json(persons)
 })
 
+//app.get('/api/persons/:id', (request, response) => {
+    //const id = request.params.id
+    //const person = persons.find(person => person.id === id)
+    //if (person) {
+        //response.json(person)
+    //} else {
+        //response.status(404).end()
+    //}
+//})
+
 app.get('/api/persons/:id', (request, response) => {
-    const id = request.params.id
-    const person = persons.find(person => person.id === id)
-    if (person) {
-        response.json(person)
-    } else {
-        response.status(404).end()
-    }
-})
+    Person.findById(request.params.id).then(person => {
+      response.json(person)
+    })
+  })
 
 app.delete('/api/persons/:id', (request, response) => {
     const id = request.params.id
@@ -89,13 +95,17 @@ app.delete('/api/persons/:id', (request, response) => {
   })
 
 app.post('/api/persons', (request, response) => {
-    const person = request.body;
+    const body = request.body;
 
     //check name and number provided
-    if (!person.name || !person.number) {
-        return response.status(400).json({ 
-            error: 'The name or number is missing' 
-        });
+    //if (!person.name || !person.number) {
+        //return response.status(400).json({
+            //error: 'The name or number is missing'
+        //});
+    //}
+
+    if (body.content === undefined) {
+        return response.status(400).json({ error: 'content missing' })
     }
 
     //check if name already occupied
@@ -111,14 +121,23 @@ app.post('/api/persons', (request, response) => {
     }
     const randomId = getRandomInt(10000)
 
-    const newPerson = {
-        id: String(randomId),
-        name: person.name,
-        number: person.number
-    };
+    //const newPerson = {
+        //id: String(randomId),
+        //name: person.name,
+        //number: person.number
+    //};
 
-    persons = persons.concat(newPerson)
-    response.json(newPerson)
+    const person = new Person({
+        name: body.name,
+        number: body.number,
+    })
+    
+    //persons = persons.concat(newPerson)
+    //response.json(newPerson)
+
+    person.save().then(savedPerson => {
+        response.json(savedPerson)
+    })
 });
 
 app.use(unknownEndpoint)
