@@ -52,14 +52,19 @@ let persons = [
   ]
 
 app.get('/info', (request, response) => {
-    const totalPersons = persons.length;
-    const todayDate = new Date();
-    
-    response.send(`
-        <p>Phonebook has info for ${totalPersons} people</p>
+  Person.countDocuments({})
+    .then(count => {
+      const todayDate = new Date();
+      response.send(`
+        <p>Phonebook has info for ${count} people</p>
         <p>${todayDate}</p>
-    `);
-})
+      `);
+    })
+    .catch(error => {
+      console.error(error.message);
+      response.status(500).send({ error: 'Server error' });
+    });
+});
   
 app.get('/api/persons', (request, response) => {
   Person.find({}).then(persons => {
@@ -71,13 +76,14 @@ app.get('/api/persons/:id', (request, response, next) => {
   Person.findById(request.params.id)
     .then(person => {
       if (person) {
-        response.json(person)
+        response.json(person);  
       } else {
-        response.status(404).end()
+        response.status(404).end();  
       }
     })
-    .catch(error => next(error))
-})
+    .catch(error => next(error));  
+});
+
 
 app.delete('/api/persons/:id', (request, response, next) => {
   Person.findByIdAndDelete(request.params.id)
