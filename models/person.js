@@ -25,7 +25,7 @@ const personSchema = new mongoose.Schema({
     minlength: 8,
     validate: {
       validator: function(v) {
-        return /^\d{2,3}-\d+$/.test(v);
+        return /^\d{2,3}-\d+$/.test(v)
       },
       message: props => `${props.value} incorrect format! Number has to be formed of two parts separated by - first part has 2-3 numbers and the second part also consists of numbers`
     },
