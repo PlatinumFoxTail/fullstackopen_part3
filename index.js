@@ -96,18 +96,25 @@ app.delete('/api/persons/:id', (request, response, next) => {
 app.post('/api/persons', (request, response, next) => {
   const body = request.body;
 
+  console.log('POST request body:', body);
+
   //create a new Person instance
   const person = new Person({
     name: body.name,
     number: body.number,
   });
 
+  console.log('New person object:', person); 
+
   //save to MongoDB and respond with JSON
   person.save()
     .then(savedPerson => {
+      console.log('Saved person:', savedPerson);
       response.json(savedPerson)
     })
-  .catch(error => next(error))
+    .catch(error =>
+      console.error('Error saving person:', error.message);
+      next(error))
 })
 
 app.put('/api/persons/:id', (request, response, next) => {
