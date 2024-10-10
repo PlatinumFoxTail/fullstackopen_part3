@@ -110,12 +110,13 @@ app.post('/api/persons', (request, response, next) => {
   person.save()
     .then(savedPerson => {
       console.log('Saved person:', savedPerson);
-      response.json(savedPerson)
+      response.json(savedPerson);
     })
-    .catch(error =>
+    .catch(error => {
       console.error('Error saving person:', error.message);
-      next(error))
-})
+      next(error);
+    });
+});
 
 app.put('/api/persons/:id', (request, response, next) => {
   const { name, number} = request.body
